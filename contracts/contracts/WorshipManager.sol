@@ -77,7 +77,7 @@ contract WorshipManager {
         require(ws.used, "Worship not exists");
 
         for (uint256 i = 0; i < ws.applicants.length; i++) {
-            require(ws.applicants[i] != msg.sender, "Duplicated ppplication");
+            require(ws.applicants[i] != msg.sender, "Duplicated application");
         }
 
         ws.applicants.push(msg.sender);
@@ -104,11 +104,36 @@ contract WorshipManager {
                 Member storage m = ws.memberMap[_userId];
                 m.id = _userId;
                 m.role = Role.Member;
+                userManagerContract.joinWorship(_id, _userId);
                 break;
             }
         }
 
         require(found, "Applicant not exists");
+    }
+
+    /**
+     * @dev Quits a worship group
+     * @param _id: the id of worship group
+     */
+    function quitWorship(bytes16 _id) external {
+        Worship storage ws = worships[_id];
+        require(ws.used, "Worship not exists");
+
+        Member storage member = ws.memberMap[msg.sender];
+        require(member.id == msg.sender, "Not a member");
+        require(member.role == Role.Member, "Only role member can quit");
+
+        userManagerContract.quitWorship(_id, msg.sender);
+
+        delete ws.memberMap[msg.sender];
+        for (uint256 i = 0; i < ws.members.length; i++) {
+            if (ws.members[i] == msg.sender) {
+                ws.members[i] = ws.members[ws.members.length - 1];
+                ws.members.pop();
+                break;
+            }
+        }
     }
 
     function setConfigContractAddress(address _address) external {

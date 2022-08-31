@@ -1,5 +1,4 @@
 const utils = require('./utils');
-const { assert } = require('console');
 
 const Config = artifacts.require('Config');
 const UserManager = artifacts.require('UserManager');
@@ -19,8 +18,9 @@ contract('Worship', function(accounts) {
                 let test = await Test.new();
                 let user = await UserManager.deployed();
                 let uri = await user.getMetadataUri(member);
-                let id = await test.getUint128FromBytes16('0x12345678123456781234567812345678');
-                assert(uri == 'https://www.baidu.com/' + id);
+                let id = await test.getUint160FromBytes20(member);
+                console.log('uri', uri, id.toString());
+                assert(uri == 'https://www.baidu.com/' + id.toString());
             });
         });
     });
@@ -86,8 +86,42 @@ contract('Worship', function(accounts) {
 
             describe('All conditions satisfied', function() {
                 it('should succeed', async () => {
+                    let userManager = await UserManager.deployed();
                     let worship = await WorshipManager.deployed();
                     await worship.acceptApplication(worshipId, member, {from: admin});
+                    let userInfo = await userManager.getUserInfo(member);
+                    assert(userInfo.id == member);
+                    assert(userInfo.worships.length == 1);
+                });
+            });
+        });
+
+        describe('Quit worship', function() {
+            describe('Worship not exists', function() {
+                it('should fail', async () => {
+                    let worship = await WorshipManager.deployed();
+                    await utils.expectThrow(worship.quitWorship('0x12345678123456781234567812345678', {from: member}), 'Worship not exists');
+                });
+            });
+
+            describe('Not a member of the worship', function() {
+                it('should fail', async () => {
+                    let worship = await WorshipManager.deployed();
+                    await utils.expectThrow(worship.quitWorship(worshipId, {from: stranger}), 'Not a member');
+                });
+            });
+
+            describe('Role of the member not member', function() {
+                it('should fail', async () => {
+                    let worship = await WorshipManager.deployed();
+                    await utils.expectThrow(worship.quitWorship(worshipId, {from: admin}), 'Only role member can quit');
+                });
+            });
+
+            describe('All conditions satisfied', function() {
+                it('should succeed', async () => {
+                    let worship = await WorshipManager.deployed();
+                    await worship.quitWorship(worshipId, {from: member});
                 });
             });
         });

@@ -30,7 +30,7 @@ contract UserManager {
         require(msg.sender == worshipMgr, "Not worship manager");
 
         UserInfo storage u = users[_userId];
-        // u.id = _userId;
+        u.id = _userId;
         u.worships.push(_id);
     }
 
