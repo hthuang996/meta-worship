@@ -21,14 +21,19 @@ struct Worship {
     address[] members;
     mapping(address => Member) memberMap;
     address[] applicants;
-    bool used;
+}
+
+struct WorshipInfo {
+    bytes16 id;
+    Member[] members;
+    address[] applicants;
 }
 
 contract WorshipManager {
     uint8 constant RETRY_TIMES = 10;
 
     // all worships
-    mapping(bytes16 => Worship) worships;
+    mapping(bytes16 => Worship) public worships;
     // total worship number
     uint128 public worshipNumber;
     // config contract
@@ -45,9 +50,8 @@ contract WorshipManager {
             bytes32 hash = keccak256(abi.encode(block.number, msg.sender, i));
             bytes16 worshipAddr = bytes16(hash);
             Worship storage ws = worships[worshipAddr];
-            if (!ws.used) {
+            if (ws.id == bytes16(0)) {
                 ws.id = worshipAddr;
-                ws.used = true;
                 ws.members.push(msg.sender);
                 Member storage m = ws.memberMap[msg.sender];
                 m.id = msg.sender;
@@ -74,7 +78,9 @@ contract WorshipManager {
      */
     function applyJoin(bytes16 _id) external {
         Worship storage ws = worships[_id];
-        require(ws.used, "Worship not exists");
+        require(ws.id != bytes16(0), "Worship not exists");
+
+        require(ws.memberMap[msg.sender].id != msg.sender, "Member can not apply");
 
         for (uint256 i = 0; i < ws.applicants.length; i++) {
             require(ws.applicants[i] != msg.sender, "Duplicated application");
@@ -90,7 +96,7 @@ contract WorshipManager {
      */
     function acceptApplication(bytes16 _id, address _userId) external {
         Worship storage ws = worships[_id];
-        require(ws.used, "Worship not exists");
+        require(ws.id != bytes16(0), "Worship not exists");
 
         require(ws.memberMap[msg.sender].role == Role.Admin, "Permission denied");
 
@@ -118,7 +124,7 @@ contract WorshipManager {
      */
     function quitWorship(bytes16 _id) external {
         Worship storage ws = worships[_id];
-        require(ws.used, "Worship not exists");
+        require(ws.id != bytes16(0), "Worship not exists");
 
         Member storage member = ws.memberMap[msg.sender];
         require(member.id == msg.sender, "Not a member");
@@ -142,5 +148,17 @@ contract WorshipManager {
 
     function setUserManagerContractAddress(address _address) external {
         userManagerContract = UserManager(_address);
+    }
+
+    function getWorshipInfo(bytes16 _id) external view returns (WorshipInfo memory ret) {
+        Worship storage ws = worships[_id];
+        require(ws.id != bytes16(0), "Worship not exists");
+
+        ret.id = ws.id;
+        ret.applicants = ws.applicants;
+        ret.members = new Member[](ws.members.length);
+        for (uint256 i = 0; i < ws.members.length; i++) {
+            ret.members[i] = ws.memberMap[ws.members[i]];
+        }
     }
 }

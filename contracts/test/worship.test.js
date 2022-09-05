@@ -58,6 +58,8 @@ contract('Worship', function(accounts) {
                 it('should succeed', async () => {
                     let worship = await WorshipManager.deployed();
                     await worship.applyJoin(worshipId, {from: member});
+                    let worshipInfo = await worship.getWorshipInfo(worshipId);
+                    console.log('worshipInfo', worshipInfo);
                 });
             });
         });
