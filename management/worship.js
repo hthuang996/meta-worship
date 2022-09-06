@@ -33,6 +33,11 @@ async function acceptApplication(privateKey, id, userId) {
   await ethereum.sendTransaction(web3, config.get('chainId'), contract, 'acceptApplication', privateKey, [id, userId]);
 }
 
+async function getWorshipInfo(id) {
+  let ret = await ethereum.contractCall(contract, 'getWorshipInfo', [id]);
+  console.log('ret', ret);
+}
+
 (async function () {
   function list(val) {
     return val.split(',')
@@ -43,6 +48,7 @@ async function acceptApplication(privateKey, id, userId) {
       .option('-c, --create <key index>', 'Create a new worship group', list)
       .option('-j, --join <key index>,<worship id>', 'Apply to join a worship group', list)
       .option('-a, --accept <key index>,<worship id>,<user id>', 'Accept an application', list)
+      .option('-w, --worship <worship id>', 'Get worship information', list)
       .parse(process.argv);
 
   if (program.opts().create) {
@@ -72,5 +78,15 @@ async function acceptApplication(privateKey, id, userId) {
 
     init();
     await acceptApplication(privateKeys[accept[0]], accept[1], accept[2]);
+  }
+  else if (program.opts().worship) {
+    let worship = program.opts().worship;
+    if (worship.length != 1) {
+        console.log('1 arguments are needed, but ' + worship.length + ' provided');
+        return;
+    }
+
+    init();
+    await getWorshipInfo(worship[0]);
   }
 }());
