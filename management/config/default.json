@@ -1,8 +1,8 @@
 {
     "nodeAddress": "https://devnetopenapi2.platon.network/rpc",
     "chainId": "2203181",
-    "userManagerContractAddress": "0x201aba9fbC7eDED5aE1bB43C968Ce549B0282d00",
-    "worshipManagerContractAddress": "0x6B53154b02A50CcF172498e19592Ad5Ea8ab317e",
+    "userManagerContractAddress": "0xDE78F3508F6d6Beb4a03D373c0b5F3188F538413",
+    "worshipManagerContractAddress": "0x0cB4813aB1D9c58ED2EAEA05EB6Dc15FE391b6Ab",
     "userManagerAbiPath": "../contracts/build/contracts/UserManager.json",
     "worshipManagerAbiPath": "../contracts/build/contracts/WorshipManager.json"
 }
