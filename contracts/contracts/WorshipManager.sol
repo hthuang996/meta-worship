@@ -41,6 +41,8 @@ contract WorshipManager {
     // user manager contract
     UserManager public userManagerContract;
 
+    event WorshipCreated(address indexed creator, bytes16 id);
+
     /**
      * @dev Creates a worship group
      */
@@ -58,6 +60,7 @@ contract WorshipManager {
                 m.role = Role.Admin;
                 found = true;
                 userManagerContract.joinWorship(worshipAddr, msg.sender);
+                emit WorshipCreated(msg.sender, ws.id);
                 break;
             }
         }

@@ -51,6 +51,10 @@ module.exports = {
       provider: () => new HDWalletProvider(mnemonic, `wss://devnetopenapi2.platon.network/ws`),
       network_id: "*",       // Any network (default: none)
     },
+    RINKEBY: {
+      provider: () => new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`),
+      network_id: "*",       // Any network (default: none)
+    },
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port

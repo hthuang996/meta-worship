@@ -11,8 +11,8 @@ module.exports = async function (deployer) {
   let userMgr = await UserManager.deployed();
   let worshipMgr = await WorshipManager.deployed();
 
-  await config.setUserMetadataBaseUri("https://www.baidu.com/");
-  await config.setWorshipMetadataBaseUri("https://www.baidu.com/");
+  await config.setUserMetadataBaseUri("https://wanxiang-fall.oss-cn-hangzhou.aliyuncs.com/");
+  await config.setWorshipMetadataBaseUri("https://wanxiang-fall.oss-cn-hangzhou.aliyuncs.com/");
   
   await userMgr.setConfigContractAddress(config.address);
   await userMgr.setWorshipManagerAddress(worshipMgr.address);

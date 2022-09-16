@@ -22,7 +22,8 @@ function init() {
 }
 
 async function createWorship(privateKey) {
-  await ethereum.sendTransaction(web3, config.get('chainId'), contract, 'createWorship', privateKey, []);
+  let ret = await ethereum.sendTransaction(web3, config.get('chainId'), contract, 'createWorship', privateKey, []);
+  console.log('WorshipCreated', ret.logs[0].args);
 }
 
 async function applyJoin(privateKey, id) {
